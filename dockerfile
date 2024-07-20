@@ -10,10 +10,8 @@ WORKDIR /home/dev/pytorch_learning
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    git \
     python3-pip \
     python3-venv \
-    openssh-client \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Create a virtual environment
@@ -24,13 +22,8 @@ ENV PATH="/opt/venv/bin:$PATH"
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir jupyter notebook pytorch torchvision torchaudio
 
-# Set up SSH for GitHub
-RUN mkdir -p /root/.ssh && \
-    chmod 700 /root/.ssh && \
-    ssh-keyscan github.com >> /root/.ssh/known_hosts
-
-# Clone your GitHub repository
-RUN --mount=type=ssh git clone git@github.com:shreyashguptas/pytorch-deep-learning.git .
+# Copy the local directory contents into the container at /home/dev/pytorch_learning
+COPY . /home/dev/pytorch_learning
 
 # Install any additional requirements from your project
 RUN if [ -f requirements.txt ]; then pip install --no-cache-dir -r requirements.txt; fi
